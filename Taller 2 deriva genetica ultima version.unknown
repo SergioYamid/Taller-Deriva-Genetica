@@ -1,0 +1,340 @@
+# Taller #2 Deriva genética
+## Sergio Yamid Ospina Sandoval- Valentina Alba Sierra- Oscar Santiago Galindo Muñoz
+
+### Práctica 1
+
+Imaginen que tenemos una población con dos alelos, uno azúl y uno rojo. Asuman que la deriva genética es el único mecanismo evolutivo que esta cambiando las frecuencias alélicas. Ahora vamos a simular en R algunas cosas para ellos definamos carguemos la librerías necesarias:
+
+library(ggplot2)
+library(plyr)
+library(reshape2)
+
+Ahora difinamos los siguientes parámetros poblacionales:
+
+N: Número de individuos p,q: Frecuencias alélicas N.gen: Número de generaciones N.sim= Número de Simulaciones N.chrom= Número de alelos
+
+N = 50
+N.chrom = 2*N
+p = 0.5
+q = 1-p  
+N.gen = 100
+N.sim = 5
+
+ahora que tenemos los parámetros debemos crear una matriz para almacenar los datos que vamos a generar en cada simulación. Para ello corramos la siguiente línea:
+
+X <- matrix(0, nrow=N.gen, ncol=N.sim)
+
+establezcamos el valor inicial para cada una de nuestras simulaciones:
+
+X[1,] = rep(N.chrom*p,N.sim)
+
+Ahora creemos las simulaciones:
+
+for(j in 1:N.sim)
+{
+  for(i in 2:N.gen)
+  {
+    X[i,j] <- rbinom(1,N.chrom,prob=X[i-1,j]/N.chrom)
+  }  
+}
+
+¿Qué significa lo que acabamos de escribir?
+
+r*binom(1, N.chrom, prob=X[i-1,j]/N.chrom): Genera un número aleatorio binomial con N.chrom intentos y una probabilidad basada en la frecuencia alélica de la generación anterior.
+
+Básicamente, cada generación nueva se obtiene por muestreo aleatorio de la anterior.
+
+rbinom(n, size, prob)
+
+Ahora creemos una tabla a partir de nuestra matriz:
+
+X = data.frame(X/N.chrom)
+sim_data <- melt(X)
+
+Observemos qué hicimos. ¿Cómo hacemos?
+
+Ahora vamos a graficar. Para ello ultizaremos el paquetes ggplot2
+
+ggplot(sim_data,
+       aes(x = rep(c(1:N.gen), N.sim), y = value, colour = variable)) +
+  geom_line() +
+  ylim(0,1) +
+  labs(title="Simulaciones de Deriva Genetica", x="Generacion", y="Frecuencia alelica", colour="Simulaciones")
+
+¿Qué significa lo que acabamos de escribir?
+
+    geom_line(): Dibuja una línea para cada simulación.
+
+    ylim(0,1): Ajusta el eje y entre 0 y 1 (frecuencia alélica).
+
+    colour="Simulaciones": Diferencia cada simulación con un color distinto.
+
+ Cada línea representa una simulación de deriva genética. Se observará cómo algunas líneas terminan en 0 (fijación del alelo q) o en 1 (fijación del alelo p), lo que indica que la deriva genética eliminó la variabilidad en esos casos.
+
+Además de hacer una gráfica, debemos obtener un resultado concreto sobre en cuantas simulaciones se fijó un alelo y en cuales no:
+
+Fix <- c()
+for (i in 1:N.sim)
+{
+  if (X[N.gen,i]==0)
+  {Fix[i]="q"}
+  else
+  {if (X[N.gen,i]==1)
+  {Fix[i]="p"}
+    else
+    {Fix[i]="No_fijo"}
+  }
+}
+
+cuentas <- table(Fix)
+print(cuentas)
+
+¿Qué obtuvimos?
+
+NO se fijo, concluyendo que después de 100 generaciones, la población aún mantiene variabilidad genética.
+
+![alt text](image-1.png)
+
+Ahora que ya sabemos cómo funciona todo ustedes van a resolver algunas preguntas:
+
+
+    1.Aumente el tamaño poblacional dos, tres, cuatro y cinco veces el valor incial. ¿Obeserva alguna diferencia? 
+
+- Poblacion de 100 individuos
+![alt text](image-2.png)
+
+- Poblacion de 150 individuos
+![alt text](image-3.png)
+
+- Poblacion de 200 individuos 
+![alt text](image-4.png)
+
+- Poblacion de 250 individuos
+![alt text](image-5.png)
+
+    A medida que aumenta el tamaño poblacional, la deriva genética se vuelve más lenta.
+
+    Menos simulaciones terminan en fijación o pérdida del alelo dentro del mismo número de generaciones.
+
+    Las curvas se ven más estables, con menos fluctuaciones aleatorias.
+
+Esto es porque la deriva genética tiene más impacto en poblaciones pequeñas. En poblaciones grandes, la variación aleatoria tiene menos efecto.
+
+2.Realice de nuevo todas las simulaciones del ejercicio uno, pero iniciando con una prefuencia de 0.8 y 0.3. ¿Hay alguna diferencia en los resultados? ¿Por qué?.
+
+- Poblacion de 0.8 de N 50
+![alt text](image-6.png)
+
+- poblacion de 0.3 de N 50
+![alt text](image-7.png)
+
+- Poblacion de 0.8 de N 100
+![alt text](image-8.png)
+
+- Poblacion de 0.3 de N 100
+![alt text](image-9.png)
+
+- POblacion de 0.8 de N 150
+![alt text](image-10.png)
+
+- Poblacion de 0.3 de N 150
+![alt text](image-11.png)
+
+- Poblacion de 0.8 de N 200
+![alt text](image-12.png)
+
+- Poblacion de 0.3 de N 200
+![alt text](image-13.png)
+
+- Poblacion de 0.8 de N 250
+![alt text](image-14.png)
+
+- Poblacion de 0.3 de N 250
+![alt text](image-15.png)
+
+
+Si p = 0.8, el alelo p tiene más probabilidad de fijarse.
+
+Si p = 0.3, el alelo q es más probable que se fije.
+
+Esto confirma que la probabilidad de fijación de un alelo es igual a su frecuencia inicial.
+
+3.Ahora haga todos los ejemplos con 300 réplicas. ¿Se matiene la tendencia? Justifique su respuesta.
+
+- Poblacion con N 50 y 300 replicas
+![alt text](image-17.png)
+
+![alt text](image-16.png)
+
+- Poblacion con N 100 y 300 replicas
+![alt text](image-18.png)
+
+![alt text](image-19.png)
+
+- Poblacion con N 150 y 300
+![alt text](image-20.png)
+
+![alt text](image-21.png)
+
+- Poblacion con N 200 y 300
+![alt text](image-22.png)
+
+![alt text](image-23.png)
+
+- Poblacion con N 250 y 300
+![alt text](image-24.png)
+
+![alt text](image-25.png)
+
+Cuando aumentamos el tamaño poblacional (100, 150, 200, 250 individuos): La deriva genética sigue siendo más lenta en poblaciones grandes. Se mantiene la tendencia de que menos alelos se fijan en el mismo número de generaciones.
+
+En poblaciones pequeñas (N = 50), la fijación o pérdida del alelo ocurre rápidamente.
+E poblaciones grandes (N = 250), el cambio es más lento y hay más simulaciones donde el alelo no se fija ni se pierde en 100 generaciones.
+
+- Poblacion con N 50, 0.3 de frecuencia y 300 replicas
+![alt text](image-26.png)
+
+![alt text](image-27.png)
+
+- Poblacion con N 100, 0.3 y 300
+![alt text](image-28.png)
+
+![alt text](image-29.png)
+
+- Poblacion con N 150, 0.3 y 300
+![alt text](image-30.png)
+
+![alt text](image-31.png)
+
+- Poblacion con N 200, 0.3 y 300
+![alt text](image-32.png)
+
+![alt text](image-33.png)
+
+- Poblacion con N 250, 0.3 y 300
+![alt text](image-34.png)
+
+![alt text](image-35.png)
+
+Si p = 0.3, el alelo tiene 30% de probabilidad de fijarse y 70% de perderse.
+
+- Poblacion con N 50, 0.8 de frecuencias y 300 replicas
+![alt text](image-36.png)
+
+![alt text](image-37.png)
+
+- Poblacion con N 100, 0.8 y 300
+![alt text](image-38.png)
+
+![alt text](image-39.png)
+
+- Poblacion con N 150, 0.8 y 300
+![alt text](image-40.png)
+
+![alt text](image-41.png)
+
+- Poblacion con N 200, 0.8 y 300
+![alt text](image-42.png)
+
+![alt text](image-43.png)
+
+- Poblacion con N 250, 0.8 y 300
+![alt text](image-44.png)
+
+![alt text](image-45.png)
+
+Si p = 0.8, el alelo tiene 80% de probabilidad de fijarse y 20% de perderse.Determinando asi que el efecto al aumentar las simulaciones es que este reduce la variabilidad aleatoria, lo que permite observar con más claridad las tendencias esperadas y que ls proporciones de fijación/perdida se acercan más a las predicciones teóricas.
+
+2. Repita el primer ejercicio con 100 réplicas por 100 generaciones. Calcule el cambio en la media y la varianza a través del tiempo y grafique. ¿Qué observa?
+
+Media
+![alt text](image-47.png)
+
+La media de la frecuencia del alelo azul (p) debería mantenerse cercana a 0.5 durante muchas generaciones.Esto es porque, en ausencia de selección, mutación o migración, la media no cambia sistemáticamente: la deriva genética es aleatoria.Sin embargo, con el paso del tiempo y si muchas simulaciones terminan en fijación o pérdida, la media puede desviarse ligeramente.
+
+Varianza
+![alt text](image-48.png)
+
+La varianza de las frecuencias alélicas aumenta con el tiempo.Esto ocurre porque las frecuencias en distintas simulaciones comienzan en el mismo valor (0.5), pero luego divergen aleatoriamente.  medida que más simulaciones fijan o pierden el alelo, las frecuencias tienden a 0 o 1, y la varianza alcanza su valor máximo justo antes de que todas las simulaciones se fijen o pierdan.
+
+### Practica 2
+
+Ahora vamos a simular el efecto fundador. Para ello utilizaremos la función founder.event descrita a continuación:
+
+library(ggplot2)
+
+founder.event <- function(p0=0.5, Ne=1000, Nf=10, ttime=100, etime=50, n_sim=1) {
+  simulations <- data.frame()
+  
+  for (sim in 1:n_sim) {
+    allele_freq <- numeric(ttime)
+    allele_freq[1] <- p0
+    
+    for (t in 2:ttime) {
+      if (t <= etime) {
+        N <- Ne  # Tamaño poblacional antes del evento
+      } else {
+        N <- Nf  # Tamaño poblacional después del efecto fundador
+      }
+      
+      # Simulación usando distribución binomial
+      allele_freq[t] <- rbinom(1, 2 * N, allele_freq[t - 1]) / (2 * N)
+    }
+    
+    # Store results
+    df <- data.frame(Generation = 1:ttime, Frequency = allele_freq, Simulation = as.factor(sim))
+    simulations <- rbind(simulations, df)
+  }
+  
+  # Plot with ggplot
+  ggplot(simulations, aes(x = Generation, y = Frequency, group = Simulation, color = Simulation)) +
+    geom_line(size = 1, alpha = 0.7) +
+    geom_vline(xintercept = etime, color = "red", linetype = "dashed", size = 1) +
+    labs(title = "Founder Effect Simulation", x = "Generations", y = "Allele Frequency") +
+    ylim(0, 1) +
+    theme_minimal()
+}
+
+Corramos la función a ver como funciona
+
+founder.event(p0=0.5, Ne=1000, Nf=10, ttime=100, etime=50, n_sim=1)
+
+![alt text](image-49.png)
+
+Laínea de color rojo epresenta la evolución de la frecuencia del alelo a lo largo del tiempo. La linea roja punteada en la generación 50 Indica que esta ocurriendo el efecto fundador.
+Hasta la generación 50, la frecuencia del alelo se mantiene relativamente estable (porque el tamaño poblacional es grande).
+Después de la generación 50, se observa que la frecuencia empieza a fluctuar mucho más, e incluso puede llegar a fijarse (0 o 1), debido al efecto de deriva genética más fuerte en poblaciones pequeñas.
+
+Ejercicio:
+
+1. Corra la función con tamaño poblacional 10000 y 1000, sufriendo un cambio del 80% de la población usando 10 simulaciones. ¿Qué obtuvo?. Anexe gráficos.
+
+- Poblacion con tamaño 10000
+![alt text](image-50.png)
+
+Antes de la generación 50 (línea roja),las trayectorias de la frecuencia del alelo están muy cercanas entre sí, casi paralelas, porque la deriva es muy baja con un tamaño poblacional tan grande.Ya cuando hablamos después de la generación 50,las trayectorias comienzan a separarse ligeramente, pero aún no hay grandes fluctuaciones.
+
+Apartir de aqui se entiende que alelo no se fija (llega a 0 o 1) en la mayoría de las simulaciones debido a que 2000 sigue siendo un tamaño suficientemente grande para que la deriva genética no actúe con demasiada fuerza.
+
+- Poblacion con tamaño 1000
+![alt text](image-51.png)
+
+Antes del evento ocurre algo similar al caso anterior, pocas fluctuaciones, mas sin embargo después del evento las trayectorias divergen más claramente. Algunas simulaciones muestran alelos que tienden rápidamente hacia la fijación o pérdida (frecuencia 0 o 1).Concluyendo asi que el efecto fundador es más visible. Algunas líneas caen a 0 o suben a 1 (fijación/loss), lo que muestra cómo la deriva actúa más intensamente en poblaciones pequeñas.
+
+2. Repita lo anterior, pero iniciando con un frecuencias p=0.2. ¿Qué obtuvo?. Anexe gráficos
+
+- Poblacion 1000 a 200 con 0.2
+![alt text](image-54.png)
+
+Las trayectorias se mantienen relativamente estables antes del evento fundador (generación ≤ 50).Después del evento, la deriva genética se vuelve más fuerte.Algunas simulaciones pueden mostrar pérdida del alelo (frecuencia = 0) si la deriva lo elimina rápidamente.Como el alelo ya es raro, hay mayor probabilidad de que desaparezca.
+
+- Poblacion 10000 a 2000 con 0.2
+![alt text](image-53.png)
+
+El efecto es aún más fuerte después del evento fundador.
+La mayoría de las trayectorias tienden a:
+Fijación en 0 (desaparición del alelo).
+Muy pocas llegan a mantenerse o subir.
+Mostrando claramente cómo una frecuencia baja combinada con deriva fuerte puede llevar a la pérdida genética rápida.
+
+Concluyendo asi que cuando un alelo es inicialmente raro (p = 0.2), está en mayor riesgo de ser eliminado por deriva genética.En poblaciones pequeñas, como después de un evento fundador, el efecto es más pronunciado.La simulación con tamaño final de 200 muestra una alta tasa de pérdida del alelo.
