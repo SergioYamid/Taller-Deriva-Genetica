@@ -1,5 +1,7 @@
 # Taller #2 Deriva genética
-## Sergio Yamid Ospina Sandoval- Valentina Alba Sierra- Oscar Santiago Galindo Muñoz
+- Sergio Yamid Ospina Sandoval (070100342021)
+- Valentina Alba Sierra (070150072021)
+- Oscar Santiago Galindo Muñoz (070150792020)
 
 ### Práctica 1
 
@@ -95,6 +97,7 @@ NO se fijo, concluyendo que después de 100 generaciones, la población aún man
 
 ![alt text](image-1.png)
 
+
 Ahora que ya sabemos cómo funciona todo ustedes van a resolver algunas preguntas:
 
 
@@ -162,9 +165,9 @@ Esto confirma que la probabilidad de fijación de un alelo es igual a su frecuen
 3.Ahora haga todos los ejemplos con 300 réplicas. ¿Se matiene la tendencia? Justifique su respuesta.
 
 - Poblacion con N 50 y 300 replicas
-![alt text](image-17.png)
-
 ![alt text](image-16.png)
+
+![alt text](image-17.png)
 
 - Poblacion con N 100 y 300 replicas
 ![alt text](image-18.png)
